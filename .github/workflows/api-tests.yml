@@ -1,0 +1,50 @@
+name: Stellar Burgers API
+
+on:
+  push:
+    branches: [develop2]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  api-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          cache: pip
+      - name: Install Python dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Run API tests
+        env:
+          STELLAR_BURGERS_TIMEOUT: '10'
+        run: python -m pytest --tb=short
+      - uses: actions/setup-node@v4
+        if: always()
+        with:
+          node-version: '24'
+      - uses: pnpm/action-setup@v4
+        if: always()
+        with:
+          version: '11.25.0'
+      - name: Generate Allure report
+        if: always()
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm run report
+      - name: Upload results and report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-report
+          path: |
+            allure-results/
+            reports/allure/
+          retention-days: 30

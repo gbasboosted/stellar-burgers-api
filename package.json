@@ -1,0 +1,12 @@
+{
+  "name": "stellar-burgers-api",
+  "private": true,
+  "packageManager": "pnpm@11.25.0",
+  "engines": {"node": ">=22"},
+  "scripts": {
+    "report": "allure awesome allure-results --single-file --output reports/allure --report-name 'Stellar Burgers API' --report-language ru"
+  },
+  "devDependencies": {
+    "allure": "3.22.0"
+  }
+}
